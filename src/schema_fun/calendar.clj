@@ -93,7 +93,7 @@ Ensures correct :start, :stop chronology."
 
 (def sanitize-event
   "Transform an EventRequest into a valid Event."
-  correct-sanitize-event)
+  broken-sanitize-event)
 
 
 (defn- add-event [calendar-db event]
@@ -140,7 +140,7 @@ run concurrently."
 (def delete-event
   "Remove an event from a calender-db.
 Returns the event that was removed."
-  correct-delete-event)
+  broken-delete-event)
 
 
 (defn broken-between
@@ -172,13 +172,11 @@ if a date-time is between the provided two date-times."
 
 
 
-(def compare-events-start (compare-with :start))
-
 
 (defn schedule-for
   [calendar-db dt-a dt-b]
   (let [events  (sort-by :start
-                  (remove (comp (between dt-a dt-b) :start)
+                  (filter (comp (between dt-a dt-b) :start)
                     (vals @calendar-db)))]
     {:from   (min-comparable dt-a dt-b)
      :to     (max-comparable dt-a dt-b)

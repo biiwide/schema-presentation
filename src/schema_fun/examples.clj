@@ -148,6 +148,26 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Anything
+;;
+(def whatever
+  "Anything is fine..."
+  schema/Any)
+
+;; Valid
+(schema/check whatever "string")
+(schema/check whatever 11)
+(schema/check whatever :keyword)
+(schema/check whatever ["List of stuff" 99 true])
+(schema/check whatever {:a-map "of stuff"})
+(schema/check whatever nil)
+
+;; Invalid - Nothing
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; A schema for either integers or nil
 ;;
 (def maybe-an-integer
@@ -329,10 +349,9 @@
 
 (def odd-evens
   "A sequence containing an odd number of even integers"
-  (schema/constrained
-    [(schema/constrained schema/Int even?)]
-    (comp odd? count)
-    'odd-count?))
+  (-> [(-> schema/Int (schema/constrained even?))]
+
+      (schema/constrained (comp odd? count) 'odd-count?)))
 
 ;; Valid
 (schema/check odd-evens [2])
