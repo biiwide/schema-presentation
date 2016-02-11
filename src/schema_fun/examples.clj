@@ -178,8 +178,8 @@
 (schema/check maybe-an-integer 456)
 (schema/check maybe-an-integer nil)
 
-
-
+;; Invalid
+(schema/check maybe-an-integer 3.21)
 
 
 
