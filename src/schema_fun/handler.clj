@@ -19,6 +19,7 @@
   {"en" "Hello %s"
    "es" "Hola %s"
    "fi" "Terve %s"
+   "fr" "Bonjour %s"
    "de" "Hallo %s"
    "it" "Ciao %s"
    "ja" "こんにちは %s"
@@ -27,15 +28,15 @@
 
 
 
-;(s/defschema LanguageCode
-;  "Valid Language Codes"
-;  (apply s/enum (keys hello-format-strings)))
-;
-;
-;(s/defschema Message
-;  "A response message, with a language identifier"
-;  {:message  String
-;   :language LanguageCode})
+(s/defschema LanguageCode
+  "Valid Language Codes"
+  (apply s/enum (keys hello-format-strings)))
+
+
+(s/defschema EnumMessage
+  "A response message, with a language identifier"
+  {:message  String
+   :language LanguageCode})
 
 
 (s/defschema MissingEvent
@@ -72,11 +73,24 @@
 
    (context "/hello" []
      :tags ["hello"]
-     (GET "/:language" []
+     (GET "/string/:language" []
        :return       Message
        :responses    {404 {:schema Message
                            :description "An error Message"}}
        :path-params  [language :- String]
+       :query-params [name :- String]
+       :summary "Say 'hello' in a particular language"
+       (if-some [msg (hello language name)]
+         (ok msg)
+         (not-found
+           {:message  (format "I don't speak '%s'." language)
+            :language "en"})))
+
+     (GET "/enum/:language" []
+       :return       EnumMessage
+       :responses    {404 {:schema EnumMessage
+                           :description "An error Message"}}
+       :path-params  [language :- LanguageCode]
        :query-params [name :- String]
        :summary "Say 'hello' in a particular language"
        (if-some [msg (hello language name)]
